@@ -32,13 +32,14 @@ The `-P` flag maps all listening ports inside the container, particularly, the S
 docker port fluid 22
 ```
 
-## Login to the Development Environment
-
 Suppose that the above command prints the host network address `0.0.0.0:32770`, we could log in by running
 
 ```bash
 ssh root@localhost -P 32770
 ```
+
+
+## Build and Test in the Development Environment
 
 Within the SSH session, type the following command to build the Fluid source code:
 
@@ -59,3 +60,15 @@ make -j10
 ```
 
 in the SSH session again to rebuild.
+
+The following command lists all unit tests:
+
+```bash
+ctest -N
+```
+
+The following command runs a specific test and output verbose:
+
+```bash
+ctest -V -R test_fit_a_line
+```
