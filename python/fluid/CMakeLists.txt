@@ -12,5 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 py_test(test_fit_a_line SRCS test_fit_a_line.py)

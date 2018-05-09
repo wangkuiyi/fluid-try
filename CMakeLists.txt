@@ -20,5 +20,7 @@ set(THIRD_PARTY_PATH "${CMAKE_BINARY_DIR}/third_party" CACHE STRING
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake")
 include(like-bazel)
 
+enable_testing()
+
 add_subdirectory(cpp)
 add_subdirectory(python)

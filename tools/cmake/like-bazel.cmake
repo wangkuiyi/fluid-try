@@ -317,12 +317,12 @@ function(py_proto_compile TARGET_NAME)
 endfunction()
 
 function(py_test TARGET_NAME)
-    set(options "")
-    set(oneValueArgs "")
-    set(multiValueArgs SRCS DEPS ARGS ENVS)
-    cmake_parse_arguments(py_test "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-    add_test(NAME ${TARGET_NAME}
-             COMMAND env PYTHONPATH=${PADDLE_BINARY_DIR}/python ${py_test_ENVS}
-             ${PYTHON_EXECUTABLE} -u ${py_test_SRCS} ${py_test_ARGS}
-             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+  set(options "")
+  set(oneValueArgs "")
+  set(multiValueArgs SRCS DEPS ARGS ENVS)
+  cmake_parse_arguments(py_test "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  add_test(NAME ${TARGET_NAME}
+    COMMAND env PYTHONPATH=${PADDLE_BINARY_DIR}/python ${py_test_ENVS}
+    ${PYTHON_EXECUTABLE} -u ${py_test_SRCS} ${py_test_ARGS}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 endfunction()
