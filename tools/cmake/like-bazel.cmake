@@ -92,6 +92,11 @@ find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 
 
+# Python is required for py_test.
+find_package(PythonInterp)
+find_package(PythonLibs)
+
+
 if(NOT APPLE AND NOT ANDROID)
     find_package(Threads REQUIRED)
     link_libraries(${CMAKE_THREAD_LIBS_INIT})
@@ -316,13 +321,14 @@ function(py_proto_compile TARGET_NAME)
   add_custom_target(${TARGET_NAME} ALL DEPENDS ${py_srcs})
 endfunction()
 
+
 function(py_test TARGET_NAME)
   set(options "")
   set(oneValueArgs "")
   set(multiValueArgs SRCS DEPS ARGS ENVS)
   cmake_parse_arguments(py_test "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   add_test(NAME ${TARGET_NAME}
-    COMMAND env PYTHONPATH=${PADDLE_BINARY_DIR}/python ${py_test_ENVS}
-    ${PYTHON_EXECUTABLE} -u ${py_test_SRCS} ${py_test_ARGS}
+    COMMAND env PYTHONPATH=${CMAKE_BINARY_DIR}/python ${py_test_ENVS}
+    ${PYTHON_EXECUTABLE} -u ${CMAKE_CURRENT_SOURCE_DIR}/${py_test_SRCS} ${py_test_ARGS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 endfunction()
