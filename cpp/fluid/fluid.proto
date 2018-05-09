@@ -13,8 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 syntax = "proto2";
-option optimize_for = LITE_RUNTIME;
-package paddle.framework.proto;
+
+package fluid;
 
 enum AttrType {
   INT = 0;
