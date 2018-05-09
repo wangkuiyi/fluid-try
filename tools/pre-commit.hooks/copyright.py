@@ -23,7 +23,7 @@ import subprocess
 import platform
 
 COPYRIGHT = '''
-Copyright 2016 Yi Wang <yi.wang.2005@gmail.com> All Rights Reserved.
+Copyright 2018 Yi Wang <yi.wang.2005@gmail.com> All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
