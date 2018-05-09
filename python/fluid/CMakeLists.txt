@@ -1,4 +1,4 @@
-# Copyright 2016 Yi Wang <yi.wang.2005@gmail.com>. All Rights Reserved.
+# Copyright Yi Wang <yi.wang.2005@gmail.com>. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -10,15 +10,7 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License
+# limitations under the License.
+#
 
-cmake_minimum_required(VERSION 3.0)
-
-set(THIRD_PARTY_PATH "${CMAKE_BINARY_DIR}/third_party" CACHE STRING
-  "A path setting third party libraries download & build directories.")
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake")
-include(like-bazel)
-
-add_subdirectory(cpp)
-add_subdirectory(python)
+py_test(test_fit_a_line SRCS test_fit_a_line.py)
