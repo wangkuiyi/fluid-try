@@ -11,16 +11,4 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License
-
-cmake_minimum_required(VERSION 3.0)
-
-set(THIRD_PARTY_PATH "${CMAKE_BINARY_DIR}/third_party" CACHE STRING
-  "A path setting third party libraries download & build directories.")
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake")
-include(like-bazel)
-
-enable_testing()
-
-add_subdirectory(cpp)
-add_subdirectory(python)
+add_subdirectory(fluid)
