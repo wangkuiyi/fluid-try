@@ -1,3 +1,17 @@
+# Copyright 2018 Yi Wang <yi.wang.2005@gmail.com> All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
@@ -9,7 +23,7 @@ import subprocess
 import platform
 
 COPYRIGHT = '''
-  Copyright (c) 2016 PaddlePaddle Authors. All Rights Reserved.
+Copyright 2018 Yi Wang <yi.wang.2005@gmail.com> All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -53,7 +67,7 @@ def generate_copyright(template, lang='C'):
     ans = LANG_COMMENT_MARK + BLANK + COPYRIGHT_HEADER + NEW_LINE_MARK
     for lino, line in enumerate(lines):
         if lino == 0 or lino == 1 or lino == len(lines) - 1: continue
-        if len(line)  == 0:
+        if len(line) == 0:
             BLANK = ""
         else:
             BLANK = " "
@@ -104,7 +118,8 @@ def main(argv=None):
         second_line = fd.readline()
         if "COPYRIGHT (C)" in first_line.upper(): continue
         if first_line.startswith("#!") or PYTHON_ENCODE.match(
-                second_line) != None or PYTHON_ENCODE.match(first_line) != None:
+                second_line) != None or PYTHON_ENCODE.match(
+                    first_line) != None:
             continue
         original_contents = io.open(filename, encoding="utf-8").read()
         new_contents = generate_copyright(
