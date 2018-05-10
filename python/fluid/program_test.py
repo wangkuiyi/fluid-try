@@ -14,5 +14,5 @@
 
 import fluid.program
 
-d = fluid.create_program_desc()
+d = fluid.program.create_program_desc()
 print(d)

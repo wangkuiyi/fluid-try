@@ -9,12 +9,12 @@ RUN apt-get install -y \
     cmake coreutils libtool clang llvm clang-format \
     wget curl unzip tar bzip2 gzip \
     automake \
-    python-pip python-dev python-protobuf \
+    python-pip python-dev \
     openssh-server \
     sed grep gawk net-tools \
     zlib1g-dev  \
     liblapack-dev liblapacke-dev
-RUN apt-get install -y protobuf-compiler libprotobuf-dev
+RUN apt-get install -y protobuf-compiler libprotobuf-dev  python-protobuf
 RUN apt-get clean -y
 
 # git credential to skip password typing

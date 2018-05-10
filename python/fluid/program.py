@@ -16,4 +16,4 @@ import cpp.fluid.fluid_pb2
 
 
 def create_program_desc():
-    return fluid_pb2.ProgramDesc()
+    return cpp.fluid.fluid_pb2.ProgramDesc()
