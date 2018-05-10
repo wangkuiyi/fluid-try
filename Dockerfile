@@ -9,7 +9,7 @@ RUN apt-get install -y \
     cmake coreutils libtool clang llvm clang-format \
     wget curl unzip tar bzip2 gzip \
     automake \
-    python-pip python-dev \
+    python-pip python-dev python-protobuf \
     openssh-server \
     sed grep gawk net-tools \
     zlib1g-dev  \
