@@ -15,5 +15,5 @@
 import proto.fluid_pb2
 
 
-def create_program_desc():
-    return proto.fluid_pb2.ProgramDesc()
+def create():
+    return proto.fluid_pb2.Program()

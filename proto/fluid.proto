@@ -1,174 +1,120 @@
 /* Copyright Yi Wang <yi.wang.2005@gmail.com>. All Rights Reserved.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License. */
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
 
 syntax = "proto2";
 
 package fluid;
 
-enum AttrType {
-  INT = 0;
-  FLOAT = 1;
-  STRING = 2;
-  INTS = 3;
-  FLOATS = 4;
-  STRINGS = 5;
-  BOOLEAN = 6;
-  BOOLEANS = 7;
-  BLOCK = 8;
-  LONG = 9;
-}
-
-// OpDesc describes an instance of a C++ framework::OperatorBase
-// derived class type.
-message OpDesc {
-  message Attr {
-    required string name = 1;
-    required AttrType type = 2;
-    optional int32 i = 3;
-    optional float f = 4;
-    optional string s = 5;
-    repeated int32 ints = 6;
-    repeated float floats = 7;
-    repeated string strings = 8;
-    optional bool b = 10;
-    repeated bool bools = 11;
-    optional int32 block_idx = 12;
-    optional int64 l = 13;
-  };
-
-  message Var {
-    required string parameter = 1;
-    repeated string arguments = 2;
-  };
-
-  required string type = 3;
-  repeated Var inputs = 1;
-  repeated Var outputs = 2;
-  repeated Attr attrs = 4;
-  optional bool is_target = 5 [ default = false ];
-};
-
-// OpProto describes a C++ framework::OperatorBase derived class.
-message OpProto {
-  // VarProto describes the C++ type framework::Variable.
-  message Var {
-    required string name = 1;
-    required string comment = 2;
-
-    optional bool duplicable = 3 [ default = false ];
-    optional bool intermediate = 4 [ default = false ];
-    optional bool dispensable = 5 [ default = false ];
+// Type describe the type of variables and function parameters.
+message Type {
+  enum FirstClass {
+    UINT8 = 0;
+    UINT16 = 1;
+    UINT32 = 2;
+    UINT64 = 3;
+    INT8 = 4;
+    INT16 = 5;
+    INT32 = 6;
+    INT64 = 7;
+    FLOAT16 = 8;
+    FLOAT32 = 9;
+    FLOAT64 = 10;
+    STRING = 11;
+    BOOL = 12;
+    BLOCK = 13;
   }
-
-  // AttrProto describes the C++ type Attribute.
-  message Attr {
-    required string name = 1;
-    required AttrType type = 2;
-    required string comment = 3;
-    // If that attribute is generated, it means the Paddle third
-    // language binding has responsibility to fill that
-    // attribute. End-User should not set that attribute.
-    optional bool generated = 4 [ default = false ];
+  message Tensor {
+    repeated Type elem_type = 1; // [float16, float32] means float16 or float32.
+    repeated int64 dims = 2;     // [UNK, 640, 480] is saved as [-1, 640, 480]
   }
-
-  required string type = 1;
-  repeated Var inputs = 2;
-  repeated Var outputs = 3;
-  repeated Attr attrs = 4;
-  required string comment = 5;
-}
-
-message VarType {
-  enum Type {
-    // Pod Types
-    BOOL = 0;
-    INT16 = 1;
-    INT32 = 2;
-    INT64 = 3;
-    FP16 = 4;
-    FP32 = 5;
-    FP64 = 6;
-
-    // Other types that may need additional descriptions
-    LOD_TENSOR = 7;
-    SELECTED_ROWS = 8;
-    FEED_MINIBATCH = 9;
-    FETCH_LIST = 10;
-    STEP_SCOPES = 11;
-    LOD_RANK_TABLE = 12;
-    LOD_TENSOR_ARRAY = 13;
-    PLACE_LIST = 14;
-    READER = 15;
-    CHANNEL = 16;
-    // Any runtime decided variable type is raw
-    // raw variables should manage their own allocations
-    // in operators like nccl_op
-    RAW = 17;
-    TUPLE = 18;
-  }
-
-  required Type type = 1;
-
-  message TensorDesc {
-    // Should only be PODType. Is enforced in C++
-    required Type data_type = 1;
-    repeated int64 dims = 2; // [UNK, 640, 480] is saved as [-1, 640, 480]
-  }
-  optional TensorDesc selected_rows = 2;
-
-  message LoDTensorDesc {
-    required TensorDesc tensor = 1;
+  message LoDTensor {
+    required Tensor tensor = 1;
     optional int32 lod_level = 2 [ default = 0 ];
   }
-  optional LoDTensorDesc lod_tensor = 3;
 
-  message LoDTensorArrayDesc {
-    required TensorDesc tensor = 1;
-    optional int32 lod_level = 2 [ default = 0 ];
-  }
-  optional LoDTensorArrayDesc tensor_array = 4;
-
-  message ReaderDesc { repeated LoDTensorDesc lod_tensor = 1; }
-  optional ReaderDesc reader = 5;
-
-  message ChannelDesc {
-    required Type data_type = 1;
-    required int64 capacity = 2;
-  }
-  optional ChannelDesc channel = 6;
-
-  message Tuple { repeated Type element_type = 1; }
-  optional Tuple tuple = 7;
+  optional FirstClass first_class = 1;
+  optional Tensor tensor = 2;
+  optional LoDTensor lod_tensor = 3;
 }
 
-message VarDesc {
+// FunctionSignature is the signature of a user-defined or bulit-in
+// function.  Fluid aims to implement non-experimental operators
+// defined in ONNX as built-in functions.
+//
+// TODO(yi): Currently, we don't support namespace.  The Fluid
+// compiler searches for the definition of a function by its name in
+// Program.functions.  If it finds the definition, it can call it;
+// otherwise, this function should be a built-in one.
+message FunctionSignature {
+  message Parameter {
+    optional string name = 1; // Parameters do not have to be named.
+    required Type type = 2;
+  }
   required string name = 1;
-  required VarType type = 2;
-  optional bool persistable = 3 [ default = false ];
+  repeated Parameter inputs = 2;
+  repeated Parameter outputs = 3;
 }
 
-message BlockDesc {
-  required int32 idx = 1;
-  required int32 parent_idx = 2;
-  repeated VarDesc vars = 3;
-  repeated OpDesc ops = 4;
-  optional int32 forward_block_idx = 5 [ default = -1 ];
+// FunctionDefinition describes a user-defined function.  For built-in
+// functions, the body is implemented in C/C++, instead of a block.
+message FunctionDefinition {
+  required FunctionSignature signature = 1;
+  required int32 body = 2; // indexes to Program.blocks.
 }
 
-// Please refer to
-// https://github.com/PaddlePaddle/Paddle/blob/develop/doc/design/program.md
-// for more details.
-// TODO(panyx0718): A model can have multiple programs. Need a
-// way to distinguish them. Maybe ID or name?
-message ProgramDesc { repeated BlockDesc blocks = 1; }
+// A Block is the basic lexical structure in programming languages.
+// In C/C++/Java/etc, a block is a pair of curly braces that appears
+// in control-flows (if-else, for, while) or function definitions.  In
+// each block, there could be some local variable definitions and a
+// sequence of statements, each is usually a function invocation.
+message Block {
+  message Variable {
+    required string name = 1;
+    required Type type = 2;
+  }
+  message FunctionInvocation {
+    required string name = 1;
+    repeated string inputs = 2;  // Variable names
+    repeated string outputs = 3; // Variable names
+  }
+
+  required int32 parent = 1; // indexes in Program.blocks.
+  repeated Variable vars = 2;
+  repeated FunctionInvocation calls = 3;
+}
+
+// A Program has a lexical structure and a procedure structure.
+//
+// The lexical structure is a tree/hierarchy of Blocks.  Consider a C
+// program, the only one root block contains some function
+// definitions, including the main function, and the global variable
+// definitions.  Each function's body is a block, which might contain
+// control-flows like if-then and for, where each control-flow usually
+// has one or more blocks, e.g., the left and right branch of if-then
+// and the step of a loop.
+//
+// The procedure structure defines the sequence of (user-defined and
+// built-in) functions.  Each function call might involve one or more
+// variables as either inputs or outputs.  These variables are
+// referred by their names.  It is possible that a referred variables
+// is not defined in the block where the function invocation happends.
+// In this case, Fluid compiler searches for the variable with the
+// given name in an ancestor block.
+message Program {
+  // The flattened block-hierarchy in the program, where blocks[0] is
+  // the out-most block.
+  repeated Block blocks = 1;
+  // Function definitions in the program.
+  repeated FunctionDefinition functions = 2;
+}
