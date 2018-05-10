@@ -56,7 +56,7 @@ message OpDesc {
   repeated Var inputs = 1;
   repeated Var outputs = 2;
   repeated Attr attrs = 4;
-  optional bool is_target = 5 [default = false];
+  optional bool is_target = 5 [ default = false ];
 };
 
 // OpProto describes a C++ framework::OperatorBase derived class.
@@ -66,9 +66,9 @@ message OpProto {
     required string name = 1;
     required string comment = 2;
 
-    optional bool duplicable = 3 [default = false];
-    optional bool intermediate = 4 [default = false];
-    optional bool dispensable = 5 [default = false];
+    optional bool duplicable = 3 [ default = false ];
+    optional bool intermediate = 4 [ default = false ];
+    optional bool dispensable = 5 [ default = false ];
   }
 
   // AttrProto describes the C++ type Attribute.
@@ -79,7 +79,7 @@ message OpProto {
     // If that attribute is generated, it means the Paddle third
     // language binding has responsibility to fill that
     // attribute. End-User should not set that attribute.
-    optional bool generated = 4 [default = false];
+    optional bool generated = 4 [ default = false ];
   }
 
   required string type = 1;
@@ -123,25 +123,23 @@ message VarType {
   message TensorDesc {
     // Should only be PODType. Is enforced in C++
     required Type data_type = 1;
-    repeated int64 dims = 2;  // [UNK, 640, 480] is saved as [-1, 640, 480]
+    repeated int64 dims = 2; // [UNK, 640, 480] is saved as [-1, 640, 480]
   }
   optional TensorDesc selected_rows = 2;
 
   message LoDTensorDesc {
     required TensorDesc tensor = 1;
-    optional int32 lod_level = 2 [default = 0];
+    optional int32 lod_level = 2 [ default = 0 ];
   }
   optional LoDTensorDesc lod_tensor = 3;
 
   message LoDTensorArrayDesc {
     required TensorDesc tensor = 1;
-    optional int32 lod_level = 2 [default = 0];
+    optional int32 lod_level = 2 [ default = 0 ];
   }
   optional LoDTensorArrayDesc tensor_array = 4;
 
-  message ReaderDesc {
-    repeated LoDTensorDesc lod_tensor = 1;
-  }
+  message ReaderDesc { repeated LoDTensorDesc lod_tensor = 1; }
   optional ReaderDesc reader = 5;
 
   message ChannelDesc {
@@ -150,16 +148,14 @@ message VarType {
   }
   optional ChannelDesc channel = 6;
 
-  message Tuple {
-    repeated Type element_type = 1;
-  }
+  message Tuple { repeated Type element_type = 1; }
   optional Tuple tuple = 7;
 }
 
 message VarDesc {
   required string name = 1;
   required VarType type = 2;
-  optional bool persistable = 3 [default = false];
+  optional bool persistable = 3 [ default = false ];
 }
 
 message BlockDesc {
@@ -167,7 +163,7 @@ message BlockDesc {
   required int32 parent_idx = 2;
   repeated VarDesc vars = 3;
   repeated OpDesc ops = 4;
-  optional int32 forward_block_idx = 5 [default = -1];
+  optional int32 forward_block_idx = 5 [ default = -1 ];
 }
 
 // Please refer to
@@ -175,6 +171,4 @@ message BlockDesc {
 // for more details.
 // TODO(panyx0718): A model can have multiple programs. Need a
 // way to distinguish them. Maybe ID or name?
-message ProgramDesc {
-  repeated BlockDesc blocks = 1;
-}
+message ProgramDesc { repeated BlockDesc blocks = 1; }

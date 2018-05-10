@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cpp.fluid.fluid_pb2
+import proto.fluid_pb2
 
 
 def create_program_desc():
-    return cpp.fluid.fluid_pb2.ProgramDesc()
+    return proto.fluid_pb2.ProgramDesc()
