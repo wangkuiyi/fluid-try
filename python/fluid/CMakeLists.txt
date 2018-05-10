@@ -13,3 +13,4 @@
 # limitations under the License.
 #
 py_test(test_fit_a_line SRCS test_fit_a_line.py)
+py_test(program_test SRCS program_test.py)

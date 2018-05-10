@@ -14,7 +14,7 @@ RUN apt-get install -y \
     sed grep gawk net-tools \
     zlib1g-dev  \
     liblapack-dev liblapacke-dev
-RUN apt-get install -y protobuf-compiler libprotobuf-dev
+RUN apt-get install -y protobuf-compiler libprotobuf-dev  python-protobuf
 RUN apt-get clean -y
 
 # git credential to skip password typing

@@ -310,15 +310,20 @@ function(proto_library TARGET_NAME)
   set(proto_hdrs)
   protobuf_generate_cpp(proto_srcs proto_hdrs ${proto_library_SRCS})
   cc_library(${TARGET_NAME} SRCS ${proto_srcs} DEPS ${proto_library_DEPS} protobuf)
-endfunction()
 
-function(py_proto_compile TARGET_NAME)
-  set(oneValueArgs "")
-  set(multiValueArgs SRCS)
-  cmake_parse_arguments(py_proto_compile "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   set(py_srcs)
-  protobuf_generate_python(py_srcs ${py_proto_compile_SRCS})
-  add_custom_target(${TARGET_NAME} ALL DEPENDS ${py_srcs})
+  protobuf_generate_python(py_srcs ${proto_library_SRCS})
+  add_custom_target(${TARGET_NAME}_py ALL DEPENDS ${py_srcs})
+  # Create __init__.py in all ancestor directories of where the .proto
+  # files resides so to make the *_pb2.py a importable module.
+  message("binary" ${CMAKE_BINARY_DIR})
+  get_filename_component(cur_dir ${py_srcs} DIRECTORY)
+  message(${cur_dir})
+  while(NOT ${cur_dir} STREQUAL ${CMAKE_BINARY_DIR})
+    file(WRITE ${cur_dir}/__init__.py "")
+    get_filename_component(cur_dir ${cur_dir} DIRECTORY)
+    message(${cur_dir})
+  endwhile()
 endfunction()
 
 
@@ -328,7 +333,7 @@ function(py_test TARGET_NAME)
   set(multiValueArgs SRCS DEPS ARGS ENVS)
   cmake_parse_arguments(py_test "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   add_test(NAME ${TARGET_NAME}
-    COMMAND env PYTHONPATH=${CMAKE_BINARY_DIR}/python ${py_test_ENVS}
-    ${PYTHON_EXECUTABLE} -u ${CMAKE_CURRENT_SOURCE_DIR}/${py_test_SRCS} ${py_test_ARGS}
+    COMMAND env PYTHONPATH=${CMAKE_SOURCE_DIR}/python:${CMAKE_BINARY_DIR} ${py_test_ENVS}
+    ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${py_test_SRCS} ${py_test_ARGS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 endfunction()
