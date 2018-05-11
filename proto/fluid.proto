@@ -94,7 +94,7 @@ message FunctionSignature {
 // functions, the body is implemented in C/C++, instead of a block.
 message FunctionDefinition {
   required FunctionSignature signature = 1;
-  required int32 body = 2; // indexes to Program.blocks.
+  optional int32 body = 2 [ default = -1 ]; // indexes to Program.blocks.
 }
 
 // A Block is the basic lexical structure in programming languages.

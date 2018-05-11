@@ -31,13 +31,10 @@ current_block = 0
 
 # var_name returns the name of the last variable currently defined in
 # the given block.  The naming convention is
-# <root_block_id>-...-<current_block_id>-<var_index>.
+# <current_block_id>-<var_index>.
 def var_name(blk):
     n = str(len(the_program.blocks[blk].vars) - 1)
-    while blk != -1:
-        n = str(blk) + '-' + n
-        blk = the_program.blocks[blk].parent
-    return n
+    return str(blk) + '-' + n
 
 
 # define_var adds a Variable to Program.blocks[blk].vars. Please be
@@ -49,6 +46,13 @@ def define_var(blk, var_type, initial_value=None):
         var.initial_value.CopyFrom(initial_value)
     return var_name(blk)
 
+
+#def call_func(fn_name, inputs):
+# 1. check signature by function fn_name
+# 2. create variables according to signature outputs
+# 3. call function-specific type inferener to set output variable types
+# 4. add output variables and their types to Block.vars
+# 5. add an element into Block.calls.
 
 #------------------------------------------------------------
 # Public interfaces
