@@ -14,6 +14,56 @@
 
 import proto.fluid_pb2
 
+SIGNED_INT = [
+    proto.fluid_pb2.Type.INT8 ,
+    proto.fluid_pb2.Type.INT16 ,
+    proto.fluid_pb2.Type.INT32 ,
+    proto.fluid_pb2.Type.INT64
+]
+UNSIGNED_INT = [
+    proto.fluid_pb2.Type.UINT8 ,
+    proto.fluid_pb2.Type.UINT16 ,
+    proto.fluid_pb2.Type.UINT32 ,
+    proto.fluid_pb2.Type.UINT64
+]
+FLOAT = [
+    proto.fluid_pb2.Type.FLOAT16 ,
+    proto.fluid_pb2.Type.FLOAT32 ,
+    proto.fluid_pb2.Type.FLOAT64
+]
 
-def create():
-    return proto.fluid_pb2.Program()
+def tensor(elem_types=SIGNED_INT + UNSIGNED_INT + FLOAT + [proto.fluid_pb2.Type.BOOL], dim=[1]):
+    t = proto.fluid_pb2.Type()
+    t.tensor.elem_types[:] = elem_types
+    t.dim[:] = dim
+    return t
+
+def signed_int_tensor(dim=[1]):
+    return tensor(SIGNED_INT, dim)
+
+def unsigned_int_tensor(dim=[1]):
+    return tensor(UNSIGNED_INT, dim)
+
+def int_tensor(dim=[1]):
+    return tensor(SIGNED_INT + UNSIGNED_INT, dim)
+
+def float_tensor(dim=[1]):
+    return tensor(FLOAT, dim)
+
+def numeric_tensor(dim=[1]):
+    return tensor(SIGNED_INT + UNSIGNED_INT + FLOAT, dim)
+
+def bool_tensor(dim=[1]):
+    return tensor([proto.fluid_pb2.Type.BOOL], dim)
+
+def create_program():
+    prog = proto.fluid_pb2.Program()
+    prog.blocks.append(proto.fluid_pb2.Block())
+    return prog
+
+current_program = create_program()
+current_block = current_program.blocks[0]
+
+
+
+def const(value, size=[1]):

@@ -26,7 +26,7 @@
 #
 import fluid
 
-W = fluid.Tensor(1.0)
+W = fluid.const(1.0)
 
 with fluid.loop(steps=100):
     x, y = fluid.data()
