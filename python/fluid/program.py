@@ -24,8 +24,8 @@ def create():
     return prog
 
 
-current_program = create()
-current_block = current_program.blocks[0]
+the_program = create()
+current_block = the_program.blocks[0]
 
 
 def define_var(blk, var_type, initial_value):

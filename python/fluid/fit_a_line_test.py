@@ -11,26 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import unittest
+import fluid.fit_a_line
+import fluid.program
 
-# Usage:
-#
-#  1. Compile the program into the intermediate representation (IR):
-#
-#     python fit_a_line.py
-#
-#  2. Interpret and run the IR:
-#
-#     python fit_a_line.py | fluid
-#
-#     where fluid is the Fluid interpreter, a C++ program.
-#
-import fluid
+class TestFluidFitALine(unittest.TestCase):
 
-W = fluid.tensor(1.0)
+    def test_fit_a_line(self):
+        print(fluid.program.the_program)
 
-with fluid.loop(steps=100):
-    x, y = fluid.data()
-    cost = fluid.mse(fluid.fc(x, W), y)
-    fluid.optimize(cost)
-
-fluid.print(W)
+if __name__ == '__main__':
+    unittest.main()
+        
