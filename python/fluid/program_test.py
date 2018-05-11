@@ -18,12 +18,17 @@ import proto.fluid_pb2
 
 class TestFluidProgram(unittest.TestCase):
     def test_tensor(self):
-        fluid.program.tensor(
+        r = fluid.program.tensor(
             [1, 2, 3, 4], proto.fluid_pb2.Type.FLOAT32, dim=[2, 2])
-        self.assertEqual(fluid.program.current_block.parent, -1)
-        self.assertEqual(len(fluid.program.current_block.vars), 1)
 
-        v = fluid.program.current_block.vars[0]
+        self.assertEqual(r, "0-0")
+        self.assertEqual(fluid.program.current_block, 0)
+
+        blk = fluid.program.the_program.blocks[0]
+        self.assertEqual(blk.parent, -1)
+        self.assertEqual(len(blk.vars), 1)
+
+        v = blk.vars[0]
         self.assertEqual(v.type,
                          fluid.type.tensor(proto.fluid_pb2.Type.FLOAT32,
                                            [2, 2]))

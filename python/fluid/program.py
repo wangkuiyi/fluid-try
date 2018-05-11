@@ -26,15 +26,28 @@ def create():
 
 
 the_program = create()
-current_block = the_program.blocks[0]
+current_block = 0
 
 
-def define_var(blk, var_type, initial_value):
-    var = proto.fluid_pb2.Block.Variable()
+# var_name returns the name of the last variable currently defined in
+# the given block.  The naming convention is
+# <root_block_id>-...-<current_block_id>-<var_index>.
+def var_name(blk):
+    n = str(len(the_program.blocks[blk].vars) - 1)
+    while blk != -1:
+        n = str(blk) + '-' + n
+        blk = the_program.blocks[blk].parent
+    return n
+
+
+# define_var adds a Variable to Program.blocks[blk].vars. Please be
+# aware that blk is an integer indexing the block in the program.
+def define_var(blk, var_type, initial_value=None):
+    var = the_program.blocks[blk].vars.add()
     var.type.CopyFrom(var_type)
-    var.initial_value.CopyFrom(initial_value)
-    blk.vars.extend([var])
-    return var
+    if initial_value != None:
+        var.initial_value.CopyFrom(initial_value)
+    return var_name(blk)
 
 
 #------------------------------------------------------------
