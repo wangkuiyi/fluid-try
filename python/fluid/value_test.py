@@ -15,14 +15,14 @@ import unittest
 import fluid.value
 import proto.fluid_pb2
 
-class TestFluidValue(unittest.TestCase):
 
+class TestFluidValue(unittest.TestCase):
     def test_scalar(self):
         v = fluid.value.scalar(1, proto.fluid_pb2.Type.INT16)
         self.assertTrue(v.HasField("int"))
         self.assertFalse(v.HasField("uint"))
         self.assertEqual(v.int, 1)
 
+
 if __name__ == '__main__':
     unittest.main()
-        

@@ -15,18 +15,18 @@ import unittest
 import fluid.program
 import proto.fluid_pb2
 
-class TestFluidProgram(unittest.TestCase):
 
+class TestFluidProgram(unittest.TestCase):
     def test_tensor(self):
-        fluid.program.tensor([1, 2, 3, 4],
-                             proto.fluid_pb2.Type.FLOAT32,
-                             dim=[2, 2])
+        fluid.program.tensor(
+            [1, 2, 3, 4], proto.fluid_pb2.Type.FLOAT32, dim=[2, 2])
         self.assertEqual(fluid.program.current_block.parent, -1)
         self.assertEqual(len(fluid.program.current_block.vars), 1)
 
         v = fluid.program.current_block.vars[0]
-        self.assertEqual(v.type, fluid.type.tensor(proto.fluid_pb2.Type.FLOAT32,
-                                                   [2, 2]))
+        self.assertEqual(v.type,
+                         fluid.type.tensor(proto.fluid_pb2.Type.FLOAT32,
+                                           [2, 2]))
         self.assertEqual(len(v.initial_value.tensor.data), 4)
         self.assertEqual(v.initial_value.tensor.data[0].real, 1)
         self.assertEqual(v.initial_value.tensor.data[1].real, 2)
@@ -36,4 +36,3 @@ class TestFluidProgram(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-        

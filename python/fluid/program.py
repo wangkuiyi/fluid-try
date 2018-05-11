@@ -17,10 +17,11 @@ import fluid.type
 import fluid.value
 import types
 
+
 def create():
     prog = proto.fluid_pb2.Program()
     blk = prog.blocks.add()
-    blk.parent = -1        # -1 indicates the root block in a program.
+    blk.parent = -1  # -1 indicates the root block in a program.
     return prog
 
 
@@ -39,6 +40,7 @@ def define_var(blk, var_type, initial_value):
 #------------------------------------------------------------
 # Public interfaces
 #------------------------------------------------------------
+
 
 def tensor(values, elem_type=proto.fluid_pb2.Type.FLOAT32, dim=[1]):
     return define_var(current_block,

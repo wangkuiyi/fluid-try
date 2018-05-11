@@ -15,11 +15,11 @@ import unittest
 import fluid.fit_a_line
 import fluid.program
 
-class TestFluidFitALine(unittest.TestCase):
 
+class TestFluidFitALine(unittest.TestCase):
     def test_fit_a_line(self):
         print(fluid.program.the_program)
 
+
 if __name__ == '__main__':
     unittest.main()
-        

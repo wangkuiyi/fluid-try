@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import fluid.type
-import operator                 # for mul
+import operator  # for mul
 import proto.fluid_pb2
 import types
+
 
 def scalar(value, type):
     v = proto.fluid_pb2.Value()
@@ -34,13 +35,12 @@ def scalar(value, type):
         raise ValueError('Unknown type:', type)
     return v
 
-        
+
 def tensor(elem_values, elem_type, dim):
     assert type(elem_values) is types.ListType
     assert len(elem_values) == reduce(operator.mul, dim, 1)
-    
+
     v = proto.fluid_pb2.Value()
-    v.tensor.data.extend(list(map(lambda x : scalar(x, elem_type),
-                             elem_values)))
+    v.tensor.data.extend(
+        list(map(lambda x: scalar(x, elem_type), elem_values)))
     return v
-    

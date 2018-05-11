@@ -24,7 +24,7 @@
 #
 #     where fluid is the Fluid interpreter, a C++ program.
 #
-from fluid.program import tensor 
+from fluid.program import tensor
 
 W = tensor([1.0])
 

@@ -15,11 +15,11 @@ import fluid.type
 import proto.fluid_pb2
 import unittest
 
-class TestFluidType(unittest.TestCase):
 
+class TestFluidType(unittest.TestCase):
     def test_tensor(self):
         elem_type = proto.fluid_pb2.Type.INT16
-        dim = [1,2,3]
+        dim = [1, 2, 3]
         t = fluid.type.tensor(elem_type, dim)
         self.assertTrue(t.HasField("tensor"))
         self.assertFalse(t.HasField("first_class"))
@@ -29,6 +29,7 @@ class TestFluidType(unittest.TestCase):
         self.assertFalse(t.tensor.elem.HasField("lod_tensor"))
         self.assertEqual(t.tensor.elem.first_class, elem_type)
         self.assertEqual(t.tensor.dim, dim)
+
 
 if __name__ == '__main__':
     unittest.main()
