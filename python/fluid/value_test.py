@@ -11,26 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import unittest
+import fluid.value
+import proto.fluid_pb2
 
-# Usage:
-#
-#  1. Compile the program into the intermediate representation (IR):
-#
-#     python fit_a_line.py
-#
-#  2. Interpret and run the IR:
-#
-#     python fit_a_line.py | fluid
-#
-#     where fluid is the Fluid interpreter, a C++ program.
-#
-import fluid
+class TestFluidValue(unittest.TestCase):
 
-W = fluid.tensor(1.0)
+    def test_scalar(self):
+        v = fluid.value.scalar(1, proto.fluid_pb2.Type.INT16)
+        self.assertTrue(v.HasField("int"))
+        self.assertFalse(v.HasField("uint"))
+        self.assertEqual(v.int, 1)
 
-with fluid.loop(steps=100):
-    x, y = fluid.data()
-    cost = fluid.mse(fluid.fc(x, W), y)
-    fluid.optimize(cost)
-
-fluid.print(W)
+if __name__ == '__main__':
+    unittest.main()
+        

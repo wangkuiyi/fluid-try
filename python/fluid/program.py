@@ -14,17 +14,33 @@
 
 import proto.fluid_pb2
 import fluid.type
+import fluid.value
+import types
 
-def create_program():
+def create():
     prog = proto.fluid_pb2.Program()
-    prog.blocks.append(proto.fluid_pb2.Block())
+    blk = prog.blocks.add()
+    blk.parent = -1        # -1 indicates the root block in a program.
     return prog
 
-current_program = create_program()
+
+current_program = create()
 current_block = current_program.blocks[0]
 
 
+def define_var(blk, var_type, initial_value):
+    var = proto.fluid_pb2.Block.Variable()
+    var.type.CopyFrom(var_type)
+    var.initial_value.CopyFrom(initial_value)
+    blk.vars.extend([var])
+    return var
 
-def const_tensor(value, size=[1]):
-    current_block
-    return nil
+
+#------------------------------------------------------------
+# Public interfaces
+#------------------------------------------------------------
+
+def tensor(values, elem_type=proto.fluid_pb2.Type.FLOAT32, dim=[1]):
+    return define_var(current_block,
+                      fluid.type.tensor(elem_type, dim),
+                      fluid.value.tensor(values, elem_type, dim))

@@ -26,32 +26,31 @@ UNSIGNED_INT = [
     proto.fluid_pb2.Type.UINT32 ,
     proto.fluid_pb2.Type.UINT64
 ]
+LONG = [
+    proto.fluid_pb2.Type.INT64,
+    proto.fluid_pb2.Type.UINT64
+]
 FLOAT = [
     proto.fluid_pb2.Type.FLOAT16 ,
     proto.fluid_pb2.Type.FLOAT32 ,
     proto.fluid_pb2.Type.FLOAT64
 ]
+BOOL = [
+    proto.fluid_pb2.Type.BOOL
+]
+STRING = [
+    proto.fluid_pb2.Type.BOOL
+]
+BLOCK = [
+    proto.fluid_pb2.Type.BLOCK
+]
+INT = SIGNED_INT + UNSIGNED_INT
+NUMERIC = INT + FLOAT
+SCALAR = NUMERIC + BOOL
 
-def tensor(elem_types=SIGNED_INT + UNSIGNED_INT + FLOAT + [proto.fluid_pb2.Type.BOOL], dim=[1]):
+def tensor(elem_type, dim):
     t = proto.fluid_pb2.Type()
-    t.tensor.elem_types[:] = elem_types
-    t.dim[:] = dim
+    t.tensor.elem.first_class = elem_type
+    t.tensor.dim[:] = dim
     return t
 
-def signed_int_tensor(dim=[1]):
-    return tensor(SIGNED_INT, dim)
-
-def unsigned_int_tensor(dim=[1]):
-    return tensor(UNSIGNED_INT, dim)
-
-def int_tensor(dim=[1]):
-    return tensor(SIGNED_INT + UNSIGNED_INT, dim)
-
-def float_tensor(dim=[1]):
-    return tensor(FLOAT, dim)
-
-def numeric_tensor(dim=[1]):
-    return tensor(SIGNED_INT + UNSIGNED_INT + FLOAT, dim)
-
-def bool_tensor(dim=[1]):
-    return tensor([proto.fluid_pb2.Type.BOOL], dim)
