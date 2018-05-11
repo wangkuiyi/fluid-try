@@ -35,8 +35,7 @@ message Type {
     BLOCK = 13;
   }
   message Tensor {
-    required Type elem =
-        1;                  // [float16, float32] means float16 or float32.
+    required Type elem = 1; // [float16, float32] means float16 or float32.
     repeated int64 dim = 2; // [UNK, 640, 480] is saved as [-1, 640, 480]
   }
   message LoDTensor {
@@ -49,7 +48,6 @@ message Type {
   optional LoDTensor lod_tensor = 3;
 }
 
-
 // Value represents the value of a const or a literal.
 message Value {
   message Tensor {
@@ -59,23 +57,20 @@ message Value {
   }
 
   message LoDTensor {
-    message Segments {
-      repeated int32 lengths = 1;
-    }
+    message Segments { repeated int32 lengths = 1; }
     required Tensor tensor = 1;
     repeated Segments lod = 2;
   }
-  
+
   optional uint64 uint = 2;
   optional int64 int = 3;
   optional double real = 4;
-  optional string string = 5;           // STRING
-  optional bool bool = 6;         // BOOL
+  optional string string = 5;        // STRING
+  optional bool bool = 6;            // BOOL
   optional int32 block = 7;          // BLOCK
   optional Tensor tensor = 8;        // tensor
   optional LoDTensor lod_tensor = 9; // lod_tensor
 }
-
 
 // FunctionSignature is the signature of a user-defined or bulit-in
 // function.  Fluid aims to implement non-experimental operators
@@ -95,14 +90,12 @@ message FunctionSignature {
   repeated Parameter outputs = 3;
 }
 
-
 // FunctionDefinition describes a user-defined function.  For built-in
 // functions, the body is implemented in C/C++, instead of a block.
 message FunctionDefinition {
   required FunctionSignature signature = 1;
   required int32 body = 2; // indexes to Program.blocks.
 }
-
 
 // A Block is the basic lexical structure in programming languages.
 // In C/C++/Java/etc, a block is a pair of curly braces that appears
@@ -120,11 +113,10 @@ message Block {
     repeated string outputs = 3; // Variable names
   }
 
-  required int32 parent = 1; // parent indexes in Program.blocks.
-  repeated Variable vars = 2;    // the index of a var in vars is its name.
+  required int32 parent = 1;  // parent indexes in Program.blocks.
+  repeated Variable vars = 2; // the index of a var in vars is its name.
   repeated FunctionInvocation calls = 3;
 }
-
 
 // A Program has a lexical structure and a procedure structure.
 //
