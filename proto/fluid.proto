@@ -49,83 +49,103 @@ message Type {
   optional LoDTensor lod_tensor = 3;
 }
 
+
+// Value represents the value of a const or a literal.
 message Value {
   message Tensor {
-    required bytes required Type type = 1;
-    optional uint64 numerical = 2;     // INT, UINT, FLOAT
-    optional string str = 3;           // STRING
-    optional bool boolean = 4;         // BOOL
-    optional int32 block = 4;          // BLOCK
-    optional Tensor tensor = 6;        // tensor
-    optional LoDTensor lod_tensor = 7; // lod_tensor
+    required bytes data = 1;
+    repeated int64 dim = 2;
+  }
 
-    // FunctionSignature is the signature of a user-defined or bulit-in
-    // function.  Fluid aims to implement non-experimental operators
-    // defined in ONNX as built-in functions.
-    //
-    // TODO(yi): Currently, we don't support namespace.  The Fluid
-    // compiler searches for the definition of a function by its name in
-    // Program.functions.  If it finds the definition, it can call it;
-    // otherwise, this function should be a built-in one.
-    message FunctionSignature {
-      message Parameter {
-        optional string name = 1; // Parameters do not have to be named.
-        required Type type = 2;
-      }
-      required string name = 1;
-      repeated Parameter inputs = 2;
-      repeated Parameter outputs = 3;
+  message LoDTensor {
+    message Segments {
+      repeated int32 lengths = 1;
     }
+    required Tensor tensor = 1;
+    repeated Segments lod = 2;
+  }
+  
+  required Type type = 1;
+  optional uint64 numerical = 2;     // INT, UINT, FLOAT
+  optional string str = 3;           // STRING
+  optional bool boolean = 4;         // BOOL
+  optional int32 block = 5;          // BLOCK
+  optional Tensor tensor = 6;        // tensor
+  optional LoDTensor lod_tensor = 7; // lod_tensor
+}
 
-    // FunctionDefinition describes a user-defined function.  For built-in
-    // functions, the body is implemented in C/C++, instead of a block.
-    message FunctionDefinition {
-      required FunctionSignature signature = 1;
-      required int32 body = 2; // indexes to Program.blocks.
-    }
 
-    // A Block is the basic lexical structure in programming languages.
-    // In C/C++/Java/etc, a block is a pair of curly braces that appears
-    // in control-flows (if-else, for, while) or function definitions.  In
-    // each block, there could be some local variable definitions and a
-    // sequence of statements, each is usually a function invocation.
-    message Block {
-      message Variable {
-        required string name = 1;
-        required Type type = 2;
-      }
-      message FunctionInvocation {
-        required string name = 1;
-        repeated string inputs = 2;  // Variable names
-        repeated string outputs = 3; // Variable names
-      }
+// FunctionSignature is the signature of a user-defined or bulit-in
+// function.  Fluid aims to implement non-experimental operators
+// defined in ONNX as built-in functions.
+//
+// TODO(yi): Currently, we don't support namespace.  The Fluid
+// compiler searches for the definition of a function by its name in
+// Program.functions.  If it finds the definition, it can call it;
+// otherwise, this function should be a built-in one.
+message FunctionSignature {
+  message Parameter {
+    optional string name = 1; // Parameters do not have to be named.
+    required Type type = 2;
+  }
+  required string name = 1;
+  repeated Parameter inputs = 2;
+  repeated Parameter outputs = 3;
+}
 
-      required int32 parent = 1; // indexes in Program.blocks.
-      repeated Variable vars = 2;
-      repeated FunctionInvocation calls = 3;
-    }
 
-    // A Program has a lexical structure and a procedure structure.
-    //
-    // The lexical structure is a tree/hierarchy of Blocks.  Consider a C
-    // program, the only one root block contains some function
-    // definitions, including the main function, and the global variable
-    // definitions.  Each function's body is a block, which might contain
-    // control-flows like if-then and for, where each control-flow usually
-    // has one or more blocks, e.g., the left and right branch of if-then
-    // and the step of a loop.
-    //
-    // The procedure structure defines the sequence of (user-defined and
-    // built-in) functions.  Each function call might involve one or more
-    // variables as either inputs or outputs.  These variables are
-    // referred by their names.  It is possible that a referred variables
-    // is not defined in the block where the function invocation happends.
-    // In this case, Fluid compiler searches for the variable with the
-    // given name in an ancestor block.
-    message Program {
-      // The flattened block-hierarchy in the program, where blocks[0] is
-      // the out-most block.
-      repeated Block blocks = 1;
-      // Function definitions in the program.
-      repeated FunctionDefinition functions = 2;
-    }
+// FunctionDefinition describes a user-defined function.  For built-in
+// functions, the body is implemented in C/C++, instead of a block.
+message FunctionDefinition {
+  required FunctionSignature signature = 1;
+  required int32 body = 2; // indexes to Program.blocks.
+}
+
+
+// A Block is the basic lexical structure in programming languages.
+// In C/C++/Java/etc, a block is a pair of curly braces that appears
+// in control-flows (if-else, for, while) or function definitions.  In
+// each block, there could be some local variable definitions and a
+// sequence of statements, each is usually a function invocation.
+message Block {
+  message Variable {
+    required string name = 1;
+    required Type type = 2;
+  }
+  message FunctionInvocation {
+    required string name = 1;
+    repeated string inputs = 2;  // Variable names
+    repeated string outputs = 3; // Variable names
+  }
+
+  required int32 parent = 1; // indexes in Program.blocks.
+  repeated Value consts = 2;
+  repeated Variable vars = 3;
+  repeated FunctionInvocation calls = 4;
+}
+
+
+// A Program has a lexical structure and a procedure structure.
+//
+// The lexical structure is a tree/hierarchy of Blocks.  Consider a C
+// program, the only one root block contains some function
+// definitions, including the main function, and the global variable
+// definitions.  Each function's body is a block, which might contain
+// control-flows like if-then and for, where each control-flow usually
+// has one or more blocks, e.g., the left and right branch of if-then
+// and the step of a loop.
+//
+// The procedure structure defines the sequence of (user-defined and
+// built-in) functions.  Each function call might involve one or more
+// variables as either inputs or outputs.  These variables are
+// referred by their names.  It is possible that a referred variables
+// is not defined in the block where the function invocation happends.
+// In this case, Fluid compiler searches for the variable with the
+// given name in an ancestor block.
+message Program {
+  // The flattened block-hierarchy in the program, where blocks[0] is
+  // the out-most block.
+  repeated Block blocks = 1;
+  // Function definitions in the program.
+  repeated FunctionDefinition functions = 2;
+}
