@@ -11,8 +11,28 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import unittest
 import fluid.program
+import proto.fluid_pb2
 
-d = fluid.program.create()
-print(d)
+
+class TestFluidProgram(unittest.TestCase):
+    def test_tensor(self):
+        fluid.program.tensor(
+            [1, 2, 3, 4], proto.fluid_pb2.Type.FLOAT32, dim=[2, 2])
+        self.assertEqual(fluid.program.current_block.parent, -1)
+        self.assertEqual(len(fluid.program.current_block.vars), 1)
+
+        v = fluid.program.current_block.vars[0]
+        self.assertEqual(v.type,
+                         fluid.type.tensor(proto.fluid_pb2.Type.FLOAT32,
+                                           [2, 2]))
+        self.assertEqual(len(v.initial_value.tensor.data), 4)
+        self.assertEqual(v.initial_value.tensor.data[0].real, 1)
+        self.assertEqual(v.initial_value.tensor.data[1].real, 2)
+        self.assertEqual(v.initial_value.tensor.data[2].real, 3)
+        self.assertEqual(v.initial_value.tensor.data[3].real, 4)
+
+
+if __name__ == '__main__':
+    unittest.main()

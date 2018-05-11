@@ -13,7 +13,36 @@
 # limitations under the License.
 
 import proto.fluid_pb2
+import fluid.type
+import fluid.value
+import types
 
 
 def create():
-    return proto.fluid_pb2.Program()
+    prog = proto.fluid_pb2.Program()
+    blk = prog.blocks.add()
+    blk.parent = -1  # -1 indicates the root block in a program.
+    return prog
+
+
+the_program = create()
+current_block = the_program.blocks[0]
+
+
+def define_var(blk, var_type, initial_value):
+    var = proto.fluid_pb2.Block.Variable()
+    var.type.CopyFrom(var_type)
+    var.initial_value.CopyFrom(initial_value)
+    blk.vars.extend([var])
+    return var
+
+
+#------------------------------------------------------------
+# Public interfaces
+#------------------------------------------------------------
+
+
+def tensor(values, elem_type=proto.fluid_pb2.Type.FLOAT32, dim=[1]):
+    return define_var(current_block,
+                      fluid.type.tensor(elem_type, dim),
+                      fluid.value.tensor(values, elem_type, dim))

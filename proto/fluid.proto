@@ -35,8 +35,8 @@ message Type {
     BLOCK = 13;
   }
   message Tensor {
-    repeated Type elem_type = 1; // [float16, float32] means float16 or float32.
-    repeated int64 dims = 2;     // [UNK, 640, 480] is saved as [-1, 640, 480]
+    required Type elem = 1; // [float16, float32] means float16 or float32.
+    repeated int64 dim = 2; // [UNK, 640, 480] is saved as [-1, 640, 480]
   }
   message LoDTensor {
     required Tensor tensor = 1;
@@ -46,6 +46,30 @@ message Type {
   optional FirstClass first_class = 1;
   optional Tensor tensor = 2;
   optional LoDTensor lod_tensor = 3;
+}
+
+// Value represents the value of a const or a literal.
+message Value {
+  message Tensor {
+    repeated Value data = 1;
+    // We don't need dim here because it's in Type.Tensor, and
+    // Block.Variable associates Type and Value.
+  }
+
+  message LoDTensor {
+    message Segments { repeated int32 lengths = 1; }
+    required Tensor tensor = 1;
+    repeated Segments lod = 2;
+  }
+
+  optional uint64 uint = 2;
+  optional int64 int = 3;
+  optional double real = 4;
+  optional string string = 5;        // STRING
+  optional bool bool = 6;            // BOOL
+  optional int32 block = 7;          // BLOCK
+  optional Tensor tensor = 8;        // tensor
+  optional LoDTensor lod_tensor = 9; // lod_tensor
 }
 
 // FunctionSignature is the signature of a user-defined or bulit-in
@@ -80,8 +104,8 @@ message FunctionDefinition {
 // sequence of statements, each is usually a function invocation.
 message Block {
   message Variable {
-    required string name = 1;
-    required Type type = 2;
+    required Type type = 1;
+    optional Value initial_value = 2;
   }
   message FunctionInvocation {
     required string name = 1;
@@ -89,8 +113,8 @@ message Block {
     repeated string outputs = 3; // Variable names
   }
 
-  required int32 parent = 1; // indexes in Program.blocks.
-  repeated Variable vars = 2;
+  required int32 parent = 1;  // parent indexes in Program.blocks.
+  repeated Variable vars = 2; // the index of a var in vars is its name.
   repeated FunctionInvocation calls = 3;
 }
 
