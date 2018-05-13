@@ -17,6 +17,11 @@ import proto.fluid_pb2
 
 
 class TestFluidProgram(unittest.TestCase):
+    def test_initialize_program(self):
+        self.assertEqual(len(fluid.program.the_program.functions), 1)  # Print
+        self.assertEqual(fluid.program.the_program.functions[0].signature.name,
+                         "Print")
+
     def test_tensor(self):
         r = fluid.program.tensor(
             [1, 2, 3, 4], proto.fluid_pb2.Type.FLOAT32, dim=[2, 2])

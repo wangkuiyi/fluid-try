@@ -22,12 +22,10 @@ class TestFluidType(unittest.TestCase):
         dim = [1, 2, 3]
         t = fluid.type.tensor(elem_type, dim)
         self.assertTrue(t.HasField("tensor"))
-        self.assertFalse(t.HasField("first_class"))
         self.assertFalse(t.HasField("lod_tensor"))
-        self.assertTrue(t.tensor.elem.HasField("first_class"))
-        self.assertFalse(t.tensor.elem.HasField("tensor"))
-        self.assertFalse(t.tensor.elem.HasField("lod_tensor"))
-        self.assertEqual(t.tensor.elem.first_class, elem_type)
+        self.assertFalse(t.tensor.elem[0].HasField("tensor"))
+        self.assertFalse(t.tensor.elem[0].HasField("lod_tensor"))
+        self.assertEqual(t.tensor.elem[0].first_class[0], elem_type)
         self.assertEqual(t.tensor.dim, dim)
 
 

@@ -35,15 +35,17 @@ message Type {
     BLOCK = 13;
   }
   message Tensor {
-    required Type elem = 1; // [float16, float32] means float16 or float32.
-    repeated int64 dim = 2; // [UNK, 640, 480] is saved as [-1, 640, 480]
+    repeated Type elem = 1; // the logical OR among the repeated types.
+    repeated int64 dim = 2; // negative value indicates unknown cardinality,
+                            // empty list means unknown dim.
   }
   message LoDTensor {
     required Tensor tensor = 1;
     optional int32 lod_level = 2 [ default = 0 ];
   }
 
-  optional FirstClass first_class = 1;
+  repeated FirstClass first_class =
+      1; // the logical OR among the repeated types.
   optional Tensor tensor = 2;
   optional LoDTensor lod_tensor = 3;
 }
@@ -142,3 +144,5 @@ message Program {
   // Function definitions in the program.
   repeated FunctionDefinition functions = 2;
 }
+
+message BuiltinFunctionSpec { repeated FunctionSignature signatures = 1; }

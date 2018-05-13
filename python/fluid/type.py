@@ -28,7 +28,7 @@ FLOAT = [
     proto.fluid_pb2.Type.FLOAT64
 ]
 BOOL = [proto.fluid_pb2.Type.BOOL]
-STRING = [proto.fluid_pb2.Type.BOOL]
+STRING = [proto.fluid_pb2.Type.STRING]
 BLOCK = [proto.fluid_pb2.Type.BLOCK]
 INT = SIGNED_INT + UNSIGNED_INT
 NUMERIC = INT + FLOAT
@@ -37,6 +37,6 @@ SCALAR = NUMERIC + BOOL
 
 def tensor(elem_type, dim):
     t = proto.fluid_pb2.Type()
-    t.tensor.elem.first_class = elem_type
+    t.tensor.elem.add().first_class.append(elem_type)
     t.tensor.dim[:] = dim
     return t
