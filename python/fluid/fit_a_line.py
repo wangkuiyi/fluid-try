@@ -25,6 +25,7 @@
 #     where fluid is the Fluid interpreter, a C++ program.
 #
 from fluid.program import tensor
+from fluid.program import write
 
 W = tensor([1.0])
 
@@ -33,4 +34,4 @@ W = tensor([1.0])
 #     cost = fluid.mse(fluid.fc(x, W), y)
 #     fluid.optimize(cost)
 
-# fluid.print(W)
+write(W)
