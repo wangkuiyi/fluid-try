@@ -49,6 +49,26 @@ def is_compatible_dim(dim1, dim2):
     return True
 
 
+def var_match_param(var_type, parameter_types):
+    """var_type is a proto.fluid_pb2.Type, parameter_types is
+    proto.fluid_pb2.FunctionSignature.Parameter.types."""
+    for t in parameter_types:
+        if str(t) == str(var_type):
+            return True
+    return False
+
+
+def infer_outputs(fn, inputs_types):
+    """infer_outputs returns a list of output types inferred from the list
+    of input types, where fn is a proto.fluid_pb2.FunctionDefinition.
+    """
+    if fn.body == -1:  # this is a built-in function
+        ots = getattr(fluid.builtins, fn.name + "_infer_types")(input_types)
+    else:
+        raise Exception("We don't support calling users defined function yet")
+    return ots
+
+
 def tensor(elem_type, dim):
     t = proto.fluid_pb2.Type()
     t.tensor.elem.first_class = elem_type

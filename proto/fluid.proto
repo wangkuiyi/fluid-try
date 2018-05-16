@@ -89,8 +89,8 @@ message Value {
 message FunctionSignature {
   message Parameter {
     optional string name = 1; // Parameters do not have to be named.
-    repeated Type type = 2;
-    optional optional variadic = 3 [ default = false ];
+    repeated Type types = 2;
+    optional bool variadic = 3 [ default = false ];
   }
   required string name = 1;
   repeated Parameter inputs = 2;

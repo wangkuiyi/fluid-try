@@ -14,14 +14,14 @@
 import proto.fluid_pb2
 import fluid.type
 import fluid.value
-import fluid.builtin
+import fluid.builtins
 import types
 import inspect
 
 
 def initialize_program():
     prog = proto.fluid_pb2.Program()
-    fluid.builtin.load_spec(prog)
+    fluid.builtins.load_spec(prog)
     blk = prog.blocks.add()
     blk.parent = -1  # -1 indicates the root block in a program.
     return prog
@@ -60,23 +60,36 @@ def define_var(location, blk, var_type, initial_value=None):
     return var_name(blk)
 
 
-# def assert_input_types_match(inputs, signature):
-#     """assert_input_types_match checks that the types of inputs match the
-#     function signature, wehre inputs is a list of var_names, and
-#     signature is proto.fluid_pb2.FunctionSignature.  It returns a list
-#     of proto.fluid_pb2.Type instances, each corresponds to an input.
-#     It raises exception if any input doesn't match the function
-#     signature.
-#     """
-#     for i in range(len(signature.inputs)):
-#         get_var(inputs[i]).type
+def assert_input_types_match(location, inputs, signature):
+    """assert_input_types_match checks that the types of inputs match the
+    function signature, wehre inputs is a list of var_names, and
+    signature is proto.fluid_pb2.FunctionSignature.  It returns a list
+    of proto.fluid_pb2.Type instances, each corresponds to an input.
+    It raises exception if any input does not match the function
+    signature.
+    """
+    j = 0  # indexing parameters
+    for var in inputs:
+        v = get_var(var)
+        param = signature.inputs[j]
+        if not fluid.type.var_match_param(v.type, param.types):
+            raise Exception(
+                "%s : the %s-th argument (%s) does not match parameter type" %
+                (location, j, v.location))
+        if not param.variadic:
+            j = j + 1
+    return [get_var(v).type for v in inputs]
+
+
 def call_func(location, blk, fn_name, inputs):
     """call_func adds a FunctionInvocation to Program.blocks[blk]. It
     returns a list of variables returned by the function."""
     for i, fn in the_program.functions:
         if fn.signature.name == fn_name:  # NOTE: No function overloading
-            ot = infer_output_types(
-                fn_name, assert_input_types_match(inputs, fn.signature.inputs))
+            ot = fluid.typeinfer_output_types(
+                fn,
+                assert_input_types_match(location, inputs,
+                                         fn.signature.inputs))
             c = the_program.blocks[blk].calls.add(
                 name=fn_name,
                 inputs=inputs,
@@ -107,7 +120,7 @@ def tensor(values, elem_type=proto.fluid_pb2.Type.FLOAT32, dim=[1]):
                       fluid.value.tensor(values, elem_type, dim))
 
 
-def print(*args):
+def write(*args):
     """print prints the value of the given variables."""
     caller = inspect.getframeinfo(inspect.stack()[1][0])
     return call_func(caller.filename + ":" + str(caller.lineno), current_block,
