@@ -121,7 +121,6 @@ message Block {
     repeated string inputs = 3;  // Variable names
     repeated string outputs = 4; // Variable names
   }
-
   required int32 parent = 1;  // parent indexes in Program.blocks.
   repeated Variable vars = 2; // the index of a var in vars is its name.
   repeated FunctionInvocation calls = 3;

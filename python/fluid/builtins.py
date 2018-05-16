@@ -32,8 +32,8 @@ def print_signature():
     return f
 
 
-def print_infer_types(input_types):
-    return None
+def write_infer_types(input_types):
+    return []
 
 
 def abs_signature():

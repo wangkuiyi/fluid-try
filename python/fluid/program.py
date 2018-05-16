@@ -44,7 +44,7 @@ def get_var(var_name):
     @return: proto.fluid_pb2.Block.Variable
     """
     s = var_name.split("-")
-    the_program.blocks[int(s[0])].vars[int(s[1])]
+    return the_program.blocks[int(s[0])].vars[int(s[1])]
 
 
 def define_var(location, blk, var_type, initial_value=None):
@@ -81,15 +81,26 @@ def assert_input_types_match(location, inputs, signature):
     return [get_var(v).type for v in inputs]
 
 
+def infer_output_types(fn, input_types):
+    """infer_outputs returns a list of output types inferred from the list
+    of input types, where fn is a proto.fluid_pb2.FunctionDefinition.
+    """
+    if fn.body == -1:  # this is a built-in function
+        ots = getattr(fluid.builtins,
+                      fn.signature.name + "_infer_types")(input_types)
+    else:
+        raise Exception("We don't support calling users defined function yet")
+    return ots
+
+
 def call_func(location, blk, fn_name, inputs):
     """call_func adds a FunctionInvocation to Program.blocks[blk]. It
     returns a list of variables returned by the function."""
-    for i, fn in the_program.functions:
+    for fn in the_program.functions:
         if fn.signature.name == fn_name:  # NOTE: No function overloading
-            ot = fluid.typeinfer_output_types(
-                fn,
-                assert_input_types_match(location, inputs,
-                                         fn.signature.inputs))
+            ot = infer_output_types(fn,
+                                    assert_input_types_match(location, inputs,
+                                                             fn.signature))
             c = the_program.blocks[blk].calls.add(
                 name=fn_name,
                 inputs=inputs,
@@ -124,4 +135,4 @@ def write(*args):
     """print prints the value of the given variables."""
     caller = inspect.getframeinfo(inspect.stack()[1][0])
     return call_func(caller.filename + ":" + str(caller.lineno), current_block,
-                     args)
+                     "write", args)
