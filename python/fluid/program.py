@@ -101,17 +101,13 @@ def call_func(location, blk, fn_name, inputs):
             ot = infer_output_types(fn,
                                     assert_input_types_match(location, inputs,
                                                              fn.signature))
-            c = the_program.blocks[blk].calls.add(
-                name=fn_name,
-                inputs=inputs,
-                outputs=list(map(lambda o: define_var(blk, o), ot)))
+            outputs = list(map(lambda o: define_var(location, blk, o), ot))
+            c = the_program.blocks[blk].calls.add(name=fn_name,
+                                                  inputs=inputs,
+                                                  outputs=outputs)
+            return outputs[0] if len(outputs) == 1 else tuple(outputs)
+    raise Exception("%s : Function %s is not defined" % (location, fn_name))
 
-
-# 1. check signature by function fn_name
-# 2. create variables according to signature outputs
-# 3. call function-specific type inferener to set output variable types
-# 4. add output variables and their types to Block.vars
-# 5. add an element into Block.calls.
 
 #------------------------------------------------------------
 # Public interfaces
@@ -119,10 +115,11 @@ def call_func(location, blk, fn_name, inputs):
 
 
 def tensor(values, elem_type=proto.fluid_pb2.Type.FLOAT32, dim=[1]):
-    """tensor defines a tensor-typed variable.  For example:
-    tensor([-1.0]) defines a 1x1-tensor whose element type is
-    float32. tensor([1,2,3,4], proto.fluid_pb2.Type.INT16, [2,2])
-    defines a 2x2-tensor of int16 elements.
+    """tensor defines a tensor-typed variable and returns the variable
+    name.  For example: tensor([-1.0]) defines a 1x1-tensor whose
+    element type is float32. tensor([1,2,3,4],
+    proto.fluid_pb2.Type.INT16, [2,2]) defines a 2x2-tensor of int16
+    elements.
     """
     caller = inspect.getframeinfo(inspect.stack()[1][0])
     return define_var(caller.filename + ":" + str(caller.lineno),
@@ -136,3 +133,10 @@ def write(*args):
     caller = inspect.getframeinfo(inspect.stack()[1][0])
     return call_func(caller.filename + ":" + str(caller.lineno), current_block,
                      "write", args)
+
+
+def abs(t):
+    "abs returns the abstract value of t, which is a numerical tensor." ""
+    caller = inspect.getframeinfo(inspect.stack()[1][0])
+    return call_func(caller.filename + ":" + str(caller.lineno), current_block,
+                     "abs", [t])

@@ -23,8 +23,7 @@ class TestFluidType(unittest.TestCase):
         self.assertTrue(fluid.type.is_compatible_dim(t1.dim, t2.dim))
 
         t1.dim.append(1)
-        self.assertTrue("have different dimensionality" in
-                        fluid.type.is_compatible_dim(t1.dim, t2.dim))
+        self.assertTrue(fluid.type.is_compatible_dim(t1.dim, t2.dim))
 
         t2.dim.append(-1)
         self.assertTrue(fluid.type.is_compatible_dim(t1.dim, t2.dim))
