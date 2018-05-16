@@ -35,15 +35,17 @@ message Type {
     BLOCK = 13;
   }
   message Tensor {
-    required Type elem = 1; // [float16, float32] means float16 or float32.
-    repeated int64 dim = 2; // [UNK, 640, 480] is saved as [-1, 640, 480]
+    required Type elem = 1; // the logical OR among the repeated types.
+    repeated int64 dim = 2; // negative value indicates unknown cardinality,
+                            // empty list means unknown dim.
   }
   message LoDTensor {
     required Tensor tensor = 1;
     optional int32 lod_level = 2 [ default = 0 ];
   }
 
-  optional FirstClass first_class = 1;
+  optional FirstClass first_class =
+      1; // the logical OR among the repeated types.
   optional Tensor tensor = 2;
   optional LoDTensor lod_tensor = 3;
 }
@@ -80,10 +82,15 @@ message Value {
 // compiler searches for the definition of a function by its name in
 // Program.functions.  If it finds the definition, it can call it;
 // otherwise, this function should be a built-in one.
+//
+// Each template-typed parameter can have multiple types.
+//
+// The last parameter of a function could be variadic.
 message FunctionSignature {
   message Parameter {
     optional string name = 1; // Parameters do not have to be named.
-    required Type type = 2;
+    repeated Type types = 2;
+    optional bool variadic = 3 [ default = false ];
   }
   required string name = 1;
   repeated Parameter inputs = 2;
@@ -94,7 +101,7 @@ message FunctionSignature {
 // functions, the body is implemented in C/C++, instead of a block.
 message FunctionDefinition {
   required FunctionSignature signature = 1;
-  required int32 body = 2; // indexes to Program.blocks.
+  optional int32 body = 2 [ default = -1 ]; // indexes to Program.blocks.
 }
 
 // A Block is the basic lexical structure in programming languages.
@@ -104,15 +111,16 @@ message FunctionDefinition {
 // sequence of statements, each is usually a function invocation.
 message Block {
   message Variable {
-    required Type type = 1;
-    optional Value initial_value = 2;
+    optional string location = 1; // e.g., "resnet50.py:15"
+    required Type type = 2;
+    optional Value initial_value = 3;
   }
   message FunctionInvocation {
-    required string name = 1;
-    repeated string inputs = 2;  // Variable names
-    repeated string outputs = 3; // Variable names
+    optional string location = 1; // e.g., "resnet50.py:20"
+    required string name = 2;
+    repeated string inputs = 3;  // Variable names
+    repeated string outputs = 4; // Variable names
   }
-
   required int32 parent = 1;  // parent indexes in Program.blocks.
   repeated Variable vars = 2; // the index of a var in vars is its name.
   repeated FunctionInvocation calls = 3;
@@ -142,3 +150,5 @@ message Program {
   // Function definitions in the program.
   repeated FunctionDefinition functions = 2;
 }
+
+message BuiltinFunctionSpec { repeated FunctionSignature signatures = 1; }

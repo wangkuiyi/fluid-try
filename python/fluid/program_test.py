@@ -17,21 +17,61 @@ import proto.fluid_pb2
 
 
 class TestFluidProgram(unittest.TestCase):
-    def test_tensor(self):
-        fluid.program.tensor(
-            [1, 2, 3, 4], proto.fluid_pb2.Type.FLOAT32, dim=[2, 2])
-        self.assertEqual(fluid.program.current_block.parent, -1)
-        self.assertEqual(len(fluid.program.current_block.vars), 1)
+    def assert_initialize_program(self):
+        # Built-in function signatures have been loaded into the program.
+        self.assertEqual(len(fluid.program.the_program.functions), 2)
+        self.assertEqual(fluid.program.the_program.functions[0].signature.name,
+                         "write")
+        self.assertEqual(fluid.program.the_program.functions[1].signature.name,
+                         "abs")
+        # The root block has been initialized.
+        self.assertEqual(len(fluid.program.the_program.blocks), 1)
+        self.assertEqual(fluid.program.the_program.blocks[0].parent, -1)
 
-        v = fluid.program.current_block.vars[0]
+    def assert_tensor(self, tensor_var):
+        self.assertEqual(tensor_var, "0-0")
+        self.assertEqual(fluid.program.current_block, 0)
+        blk = fluid.program.the_program.blocks[0]
+        self.assertEqual(len(blk.vars), 1)
+        v = blk.vars[0]
         self.assertEqual(v.type,
                          fluid.type.tensor(proto.fluid_pb2.Type.FLOAT32,
                                            [2, 2]))
         self.assertEqual(len(v.initial_value.tensor.data), 4)
-        self.assertEqual(v.initial_value.tensor.data[0].real, 1)
-        self.assertEqual(v.initial_value.tensor.data[1].real, 2)
-        self.assertEqual(v.initial_value.tensor.data[2].real, 3)
-        self.assertEqual(v.initial_value.tensor.data[3].real, 4)
+        self.assertEqual(v.initial_value.tensor.data[0].real, -1)
+        self.assertEqual(v.initial_value.tensor.data[1].real, -2)
+        self.assertEqual(v.initial_value.tensor.data[2].real, -3)
+        self.assertEqual(v.initial_value.tensor.data[3].real, -4)
+
+    def assert_abs_and_write(self):
+        self.assertEqual(fluid.program.current_block, 0)
+        blk = fluid.program.the_program.blocks[0]
+        self.assertEqual(len(blk.calls), 2)
+
+        c = blk.calls[0]
+        self.assertEqual(c.name, "abs")
+        self.assertEqual(len(c.inputs), 1)
+        self.assertEqual(c.inputs[0], "0-0")
+        self.assertEqual(len(c.outputs), 1)
+        self.assertEqual(c.outputs[0], "0-1")
+
+        c = blk.calls[1]
+        self.assertEqual(c.name, "write")
+        self.assertEqual(len(c.inputs), 1)
+        self.assertEqual(c.inputs[0], "0-1")
+        self.assertEqual(len(c.outputs), 0)
+
+    def test_write_a_tensor(self):
+        self.assert_initialize_program()
+
+        r = fluid.program.tensor(
+            [-1, -2, -3, -4], proto.fluid_pb2.Type.FLOAT32, dim=[2, 2])
+
+        self.assert_tensor(r)
+
+        fluid.program.write(fluid.program.abs(r))
+
+        self.assert_abs_and_write()
 
 
 if __name__ == '__main__':
