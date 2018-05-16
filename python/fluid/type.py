@@ -35,8 +35,22 @@ NUMERIC = INT + FLOAT
 SCALAR = NUMERIC + BOOL
 
 
+def is_compatible_dim(dim1, dim2):
+    """is_compatible_dim returns True if dim1 and dim2 are compatible with
+    each other, or an error message.  Both dim1 and dim2 are
+    proto.fluid_pb2.Type.Tensor.dim.
+    """
+    if len(dim1) != len(dim2):
+        return "%s and %s have different dimensionality" % (dim1, dim2)
+    for i in range(len(dim1)):
+        if dim1[i] >= 0 and dim2[i] >= 0 and dim1[i] != dim2[i]:
+            return "the %d-th dimension of %s and %s are not equal" % (i, dim1,
+                                                                       dim2)
+    return True
+
+
 def tensor(elem_type, dim):
     t = proto.fluid_pb2.Type()
-    t.tensor.elem.add().first_class.append(elem_type)
+    t.tensor.elem.first_class = elem_type
     t.tensor.dim[:] = dim
     return t

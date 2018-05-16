@@ -35,7 +35,7 @@ message Type {
     BLOCK = 13;
   }
   message Tensor {
-    repeated Type elem = 1; // the logical OR among the repeated types.
+    required Type elem = 1; // the logical OR among the repeated types.
     repeated int64 dim = 2; // negative value indicates unknown cardinality,
                             // empty list means unknown dim.
   }
@@ -44,7 +44,7 @@ message Type {
     optional int32 lod_level = 2 [ default = 0 ];
   }
 
-  repeated FirstClass first_class =
+  optional FirstClass first_class =
       1; // the logical OR among the repeated types.
   optional Tensor tensor = 2;
   optional LoDTensor lod_tensor = 3;
@@ -82,10 +82,15 @@ message Value {
 // compiler searches for the definition of a function by its name in
 // Program.functions.  If it finds the definition, it can call it;
 // otherwise, this function should be a built-in one.
+//
+// Each template-typed parameter can have multiple types.
+//
+// The last parameter of a function could be variadic.
 message FunctionSignature {
   message Parameter {
     optional string name = 1; // Parameters do not have to be named.
-    required Type type = 2;
+    repeated Type type = 2;
+    optional optional variadic = 3 [ default = false ];
   }
   required string name = 1;
   repeated Parameter inputs = 2;
@@ -106,13 +111,15 @@ message FunctionDefinition {
 // sequence of statements, each is usually a function invocation.
 message Block {
   message Variable {
-    required Type type = 1;
-    optional Value initial_value = 2;
+    optional string location = 1; // e.g., "resnet50.py:15"
+    required Type type = 2;
+    optional Value initial_value = 3;
   }
   message FunctionInvocation {
-    required string name = 1;
-    repeated string inputs = 2;  // Variable names
-    repeated string outputs = 3; // Variable names
+    optional string location = 1; // e.g., "resnet50.py:20"
+    required string name = 2;
+    repeated string inputs = 3;  // Variable names
+    repeated string outputs = 4; // Variable names
   }
 
   required int32 parent = 1;  // parent indexes in Program.blocks.

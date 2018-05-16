@@ -17,15 +17,32 @@ import unittest
 
 
 class TestFluidType(unittest.TestCase):
+    def test_is_compatible_dim(self):
+        t1 = proto.fluid_pb2.Type.Tensor()
+        t2 = proto.fluid_pb2.Type.Tensor()
+        self.assertTrue(fluid.type.is_compatible_dim(t1.dim, t2.dim))
+
+        t1.dim.append(1)
+        self.assertTrue("have different dimensionality" in
+                        fluid.type.is_compatible_dim(t1.dim, t2.dim))
+
+        t2.dim.append(-1)
+        self.assertTrue(fluid.type.is_compatible_dim(t1.dim, t2.dim))
+
+        t1.dim.append(2)
+        t2.dim.append(1)
+        self.assertTrue(
+            "are not equal" in fluid.type.is_compatible_dim(t1.dim, t2.dim))
+
     def test_tensor(self):
         elem_type = proto.fluid_pb2.Type.INT16
         dim = [1, 2, 3]
         t = fluid.type.tensor(elem_type, dim)
         self.assertTrue(t.HasField("tensor"))
         self.assertFalse(t.HasField("lod_tensor"))
-        self.assertFalse(t.tensor.elem[0].HasField("tensor"))
-        self.assertFalse(t.tensor.elem[0].HasField("lod_tensor"))
-        self.assertEqual(t.tensor.elem[0].first_class[0], elem_type)
+        self.assertFalse(t.tensor.elem.HasField("tensor"))
+        self.assertFalse(t.tensor.elem.HasField("lod_tensor"))
+        self.assertEqual(t.tensor.elem.first_class, elem_type)
         self.assertEqual(t.tensor.dim, dim)
 
 
