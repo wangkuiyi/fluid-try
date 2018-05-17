@@ -61,10 +61,20 @@ def add_infer_types(input_types):
     return input_types[0:1]
 
 
-BUILTIN_SPECS = [print_signature, abs_signature, add_signature]
+def matmul_signature(sig):
+    add_signature(sig)  # It is almost the signature as that of add.
+    sig.name = "matmul"
+    return sig
+
+
+def matmul_infer_types(input_types):
+    return input_types[0:1]
+
+
+BUILTIN_SPECS = ["print", "abs", "add", "matmul"]
 
 
 def load_spec(prog):
     for spec in BUILTIN_SPECS:
         sig = prog.functions.add().signature
-        spec(sig)
+        getattr(fluid.builtins, spec + "_signature")(sig)
