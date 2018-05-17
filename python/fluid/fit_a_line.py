@@ -26,12 +26,15 @@
 #
 from fluid.program import tensor
 from fluid.program import write
+from fluid.program import abs
+from fluid.program import add
 
-W = tensor([1.0])
+W = tensor([1])
+V = tensor([-1])
 
 # with fluid.loop(steps=100):
 #     x, y = fluid.data()
 #     cost = fluid.mse(fluid.fc(x, W), y)
 #     fluid.optimize(cost)
 
-write(W)
+write(W, V, add(W, abs(V)))

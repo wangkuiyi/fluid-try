@@ -13,13 +13,16 @@
 # limitations under the License.
 import unittest
 import fluid.program
+import fluid.builtins
 import proto.fluid_pb2
 
 
 class TestFluidProgram(unittest.TestCase):
     def assert_initialize_program(self):
         # Built-in function signatures have been loaded into the program.
-        self.assertEqual(len(fluid.program.the_program.functions), 2)
+        self.assertEqual(
+            len(fluid.program.the_program.functions),
+            len(fluid.builtins.BUILTIN_SPECS))
         self.assertEqual(fluid.program.the_program.functions[0].signature.name,
                          "write")
         self.assertEqual(fluid.program.the_program.functions[1].signature.name,
