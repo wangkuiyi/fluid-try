@@ -27,7 +27,8 @@ class TestFluidBuildins(unittest.TestCase):
         for f in prog.functions:
             if f.signature.name == "write":
                 found = True
-                ground_truth = fluid.builtins.print_signature()
+                ground_truth = fluid.builtins.print_signature(
+                    proto.fluid_pb2.FunctionSignature())
                 self.assertEqual(
                     len(f.signature.inputs[0].types),
                     len(ground_truth.inputs[0].types))

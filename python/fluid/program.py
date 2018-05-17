@@ -101,6 +101,7 @@ def call_func(location, blk, fn_name, inputs):
             ot = infer_output_types(fn,
                                     assert_input_types_match(location, inputs,
                                                              fn.signature))
+            print("type of ot ", type(ot), ot)
             outputs = list(map(lambda o: define_var(location, blk, o), ot))
             c = the_program.blocks[blk].calls.add(name=fn_name,
                                                   inputs=inputs,
@@ -140,3 +141,10 @@ def abs(t):
     caller = inspect.getframeinfo(inspect.stack()[1][0])
     return call_func(caller.filename + ":" + str(caller.lineno), current_block,
                      "abs", [t])
+
+
+def add(*args):
+    "add returns the summation of its variadic parameter, which is a numerical tensor." ""
+    caller = inspect.getframeinfo(inspect.stack()[1][0])
+    return call_func(caller.filename + ":" + str(caller.lineno), current_block,
+                     "add", args)

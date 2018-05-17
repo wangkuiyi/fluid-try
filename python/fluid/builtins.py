@@ -20,44 +20,51 @@ import fluid.type
 # Clang/LLVM to derive the following specifications by parsing the C++
 # source code of the built-in functions, so that built-in developers
 # don't have to write the following specifications manually.
-def print_signature():
-    f = proto.fluid_pb2.FunctionSignature()
-    f.name = "write"
-    p = f.inputs.add()
-    p.name = "x"
+def print_signature(sig):
+    sig.name = "write"
+    p = sig.inputs.add(name="x")
     for e in fluid.type.SCALAR + fluid.type.STRING:
-        t = p.types.add()
-        t.tensor.elem.first_class = e
+        t = p.types.add().tensor.elem.first_class = e
     p.variadic = True
-    return f
+    return sig
 
 
 def write_infer_types(input_types):
     return []
 
 
-def abs_signature():
-    f = proto.fluid_pb2.FunctionSignature()
-    f.name = "abs"
-    i = f.inputs.add()
-    i.name = "x"
-    o = f.inputs.add()
-    o.name = "y"
+def abs_signature(sig):
+    sig.name = "abs"
+    i = sig.inputs.add(name="x")
+    o = sig.inputs.add(name="y")
     for e in fluid.type.NUMERIC:
-        t = i.types.add()
-        t.tensor.elem.first_class = e
-        t = o.types.add()
-        t.tensor.elem.first_class = e
-    return f
+        t = i.types.add().tensor.elem.first_class = e
+        t = o.types.add().tensor.elem.first_class = e
+    return sig
 
 
 def abs_infer_types(input_types):
     return input_types
 
 
-BUILTIN_SPECS = [print_signature, abs_signature]
+def add_signature(sig):
+    sig.name = "add"
+    i = sig.inputs.add(name="x", variadic=True)
+    o = sig.inputs.add(name="y")
+    for e in fluid.type.NUMERIC:
+        t = i.types.add().tensor.elem.first_class = e
+        t = o.types.add().tensor.elem.first_class = e
+    return sig
+
+
+def add_infer_types(input_types):
+    return input_types[0:1]
+
+
+BUILTIN_SPECS = [print_signature, abs_signature, add_signature]
 
 
 def load_spec(prog):
     for spec in BUILTIN_SPECS:
-        prog.functions.add().signature.CopyFrom(spec())
+        sig = prog.functions.add().signature
+        spec(sig)
