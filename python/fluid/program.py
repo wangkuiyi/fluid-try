@@ -148,3 +148,10 @@ def add(*args):
     caller = inspect.getframeinfo(inspect.stack()[1][0])
     return call_func(caller.filename + ":" + str(caller.lineno), current_block,
                      "add", args)
+
+
+def matmul(*args):
+    "matmul returns the product of its variadic parameter, which is a numerical tensor." ""
+    caller = inspect.getframeinfo(inspect.stack()[1][0])
+    return call_func(caller.filename + ":" + str(caller.lineno), current_block,
+                     "matmul", args)

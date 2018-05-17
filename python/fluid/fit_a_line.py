@@ -28,6 +28,7 @@ from fluid.program import tensor
 from fluid.program import write
 from fluid.program import abs
 from fluid.program import add
+from fluid.program import matmul
 
 W = tensor([1])
 V = tensor([-1])
@@ -37,4 +38,4 @@ V = tensor([-1])
 #     cost = fluid.mse(fluid.fc(x, W), y)
 #     fluid.optimize(cost)
 
-write(W, V, add(W, abs(V)))
+write(matmul(W, V), add(W, abs(V)))
