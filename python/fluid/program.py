@@ -33,7 +33,7 @@ current_block = 0
 
 def var_name(blk):
     """var_name returns the name of the last variable currently defined in
-    the given block as a Block.VarName.
+    the given block as a proto.fluid_pb2.VarName.
     """
     return proto.fluid_pb2.VarName(
         block=blk, var=len(the_program.blocks[blk].vars) - 1)
