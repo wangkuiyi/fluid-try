@@ -20,7 +20,7 @@ import fluid.type
 # Clang/LLVM to derive the following specifications by parsing the C++
 # source code of the built-in functions, so that built-in developers
 # don't have to write the following specifications manually.
-def print_signature(sig):
+def write_signature(sig):
     sig.name = "write"
     p = sig.inputs.add(name="x")
     for e in fluid.type.SCALAR + fluid.type.STRING:
@@ -71,7 +71,7 @@ def matmul_infer_types(input_types):
     return input_types[0:1]
 
 
-BUILTIN_SPECS = ["print", "abs", "add", "matmul"]
+BUILTIN_SPECS = ["write", "abs", "add", "matmul"]
 
 
 def load_spec(prog):

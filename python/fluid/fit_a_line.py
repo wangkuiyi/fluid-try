@@ -33,6 +33,7 @@ from fluid.program import matmul
 W = tensor([1])
 V = tensor([-1])
 
+W = read()
 # with fluid.loop(steps=100):
 #     x, y = fluid.data()
 #     cost = fluid.mse(fluid.fc(x, W), y)
