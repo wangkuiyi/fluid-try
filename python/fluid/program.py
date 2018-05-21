@@ -33,18 +33,18 @@ current_block = 0
 
 def var_name(blk):
     """var_name returns the name of the last variable currently defined in
-    the given block.
+    the given block as a Block.VarName.
     """
-    n = str(len(the_program.blocks[blk].vars) - 1)
-    return str(blk) + '-' + n
+    return proto.fluid_pb2.VarName(
+        block=blk, var=len(the_program.blocks[blk].vars) - 1)
 
 
 def get_var(var_name):
-    """get_var returns the variable proto message given the var_name.
-    @return: proto.fluid_pb2.Block.Variable
+    """get_var returns the variable proto message given the
+    var_name. @param var_name: proto.fluid_pb2.VarName @return:
+    proto.fluid_pb2.Block.Variable
     """
-    s = var_name.split("-")
-    return the_program.blocks[int(s[0])].vars[int(s[1])]
+    return the_program.blocks[var_name.block].vars[var_name.var]
 
 
 def define_var(location, blk, var_type, initial_value=None):
@@ -101,7 +101,6 @@ def call_func(location, blk, fn_name, inputs):
             ot = infer_output_types(fn,
                                     assert_input_types_match(location, inputs,
                                                              fn.signature))
-            print("type of ot ", type(ot), ot)
             outputs = list(map(lambda o: define_var(location, blk, o), ot))
             c = the_program.blocks[blk].calls.add(name=fn_name,
                                                   inputs=inputs,

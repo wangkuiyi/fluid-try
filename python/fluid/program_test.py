@@ -32,7 +32,7 @@ class TestFluidProgram(unittest.TestCase):
         self.assertEqual(fluid.program.the_program.blocks[0].parent, -1)
 
     def assert_tensor(self, tensor_var):
-        self.assertEqual(tensor_var, "0-0")
+        self.assertEqual(tensor_var, proto.fluid_pb2.VarName(block=0, var=0))
         self.assertEqual(fluid.program.current_block, 0)
         blk = fluid.program.the_program.blocks[0]
         self.assertEqual(len(blk.vars), 1)
@@ -54,14 +54,14 @@ class TestFluidProgram(unittest.TestCase):
         c = blk.calls[0]
         self.assertEqual(c.name, "abs")
         self.assertEqual(len(c.inputs), 1)
-        self.assertEqual(c.inputs[0], "0-0")
+        self.assertEqual(c.inputs[0], proto.fluid_pb2.VarName(block=0, var=0))
         self.assertEqual(len(c.outputs), 1)
-        self.assertEqual(c.outputs[0], "0-1")
+        self.assertEqual(c.outputs[0], proto.fluid_pb2.VarName(block=0, var=1))
 
         c = blk.calls[1]
         self.assertEqual(c.name, "write")
         self.assertEqual(len(c.inputs), 1)
-        self.assertEqual(c.inputs[0], "0-1")
+        self.assertEqual(c.inputs[0], proto.fluid_pb2.VarName(block=0, var=1))
         self.assertEqual(len(c.outputs), 0)
 
     def test_write_a_tensor(self):

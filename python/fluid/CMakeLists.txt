@@ -17,5 +17,3 @@ py_test(value_test SRCS value_test.py)
 py_test(program_test SRCS program_test.py)
 py_test(builtins_test SRCS builtins_test.py)
 py_test(fit_a_line_test SRCS fit_a_line_test.py)
-
-py_test(test_test SRCS test_test.py)
