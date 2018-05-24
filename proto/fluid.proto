@@ -104,6 +104,12 @@ message FunctionDefinition {
   optional int32 body = 2 [ default = -1 ]; // indexes to Program.blocks.
 }
 
+// VarName indicate a variable defined in a Block.
+message VarName {
+  required int32 block = 1; // indices in Program.blocks
+  required int32 var = 2;   // indices in Block.vars
+}
+
 // A Block is the basic lexical structure in programming languages.
 // In C/C++/Java/etc, a block is a pair of curly braces that appears
 // in control-flows (if-else, for, while) or function definitions.  In
@@ -118,8 +124,8 @@ message Block {
   message FunctionInvocation {
     optional string location = 1; // e.g., "resnet50.py:20"
     required string name = 2;
-    repeated string inputs = 3;  // Variable names
-    repeated string outputs = 4; // Variable names
+    repeated VarName inputs = 3;
+    repeated VarName outputs = 4;
   }
   required int32 parent = 1;  // parent indexes in Program.blocks.
   repeated Variable vars = 2; // the index of a var in vars is its name.
